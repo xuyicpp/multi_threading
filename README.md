@@ -13,10 +13,16 @@
 
 - 一个简单的C++多线程程序是怎么样的
 
-[一个简单的Hello,Cuncurrent World程序](https://github.com/xuyicpp/multi_threading/blob/master/chapter01/example1_1.cpp)
+[清单1.1 一个简单的Hello,Cuncurrent World程序](https://github.com/xuyicpp/multi_threading/blob/master/chapter01/example1_1.cpp)
 
 ## 第二章
 - 启动线程，以及让各种代码在新线程上运行的方法
+
+多线程在分离detach的时候，离开局部函数后，会在后台持续运行，直到程序结束。如果仍然需要访问局部函数的变量（就会造成悬空引用的错误）。
+[清单2.1 当线程仍然访问局部变量时返回的函数]()
+解决上述错误的一个常见的方式，使函数自包含，并且把数据复制到该线程中而不是共享数据。
 - 等待线程完成并让它自动运行
+
+
 - 唯一地标识线程
 
