@@ -46,11 +46,11 @@ std::thread是支持移动的，如同std::unique_ptr是可移动的，而非可
 2.修改数据结构的设计及其不变量，从而令修改作为一系列不可分割的变更来完成，每个修改均保留其不变量。者通常被称为无锁编程，且难以尽善尽美。
 
 - 用互斥元保护数据
-在[清单3.1 用互斥元保护列表]()中，有一个全局变量，它被相应的std::mutex的全局实例保护。在add_to_list()以及list_contains()中对std::lock_guard<std::mutex>的使用意味着这些函数中的访问是互斥的list_contains()将无法再add_to_list()进行修改的半途看到该表。
+在[清单3.1 用互斥元保护列表](https://github.com/xuyicpp/multi_threading/blob/master/chapter03/example3_1.cpp)中，有一个全局变量，它被相应的std::mutex的全局实例保护。在add_to_list()以及list_contains()中对std::lock_guard<std::mutex>的使用意味着这些函数中的访问是互斥的list_contains()将无法再add_to_list()进行修改的半途看到该表。
 
-注意：一个迷路的指针或引用，所有的保护都将白费。在[清单3.2 意外地传出对受保护数据的引用]()展示了这一个错误的做法。
+注意：一个迷路的指针或引用，所有的保护都将白费。在[清单3.2 意外地传出对受保护数据的引用](https://github.com/xuyicpp/multi_threading/blob/master/chapter03/example3_2.cpp)展示了这一个错误的做法。
 
-发现接口中固有的竞争条件，这是一个粒度锁定的问题，就是说锁定从语句上升到接口了，书中用一个stack类做了一个扩展，详见[清单3.5 一个线程安全栈的详细类定义]()
+发现接口中固有的竞争条件，这是一个粒度锁定的问题，就是说锁定从语句上升到接口了，书中用一个stack类做了一个扩展，详见[清单3.5 一个线程安全栈的详细类定义](https://github.com/xuyicpp/multi_threading/blob/master/chapter03/example3_5.cpp)
 
 死锁：问题和解决方案:为了避免死锁，常见的建议是始终使用相同的顺序锁定者两个互斥元。
 std::lock函数可以同时锁定两个或更多的互斥元，而没有死锁的风险。
@@ -58,7 +58,32 @@ std::lock函数可以同时锁定两个或更多的互斥元，而没有死锁�
 - 避免嵌套锁
 - 在持有锁时，避免调用用户提供的代码
 - 以固定顺序获取锁
-这里有几个简单的事例：[清单3.7 使用锁层次来避免死锁]()、[清单3.8 用std::unique_lock灵活锁定]()
+这里有几个简单的事例：[清单3.7 使用锁层次来避免死锁](https://github.com/xuyicpp/multi_threading/blob/master/chapter03/example3_7.cpp)、[清单3.9 用std::unique_lock灵活锁定](https://github.com/xuyicpp/multi_threading/blob/master/chapter03/example3_9.cpp)
 
+锁定在恰当的粒度
+特别的，在持有锁时，不要做任何耗时的活动，比如文件的I/O。
+一般情况下，只应该以执行要求的操作所需的最小可能时间而去持有锁。这也意味着耗时的操作，比如获取获取另一个锁（即便你知道它不会死锁）或是等待I/O完成，都不应该在持有锁的时候去做，除非绝对必要。
+在[清单3.10 在比较运算符中每次锁定一个互斥元](https://github.com/xuyicpp/multi_threading/blob/master/chapter03/example3_10.cpp)虽然减少了持有锁的时间，但是也暴露在竞争条件中去了。
 
 - 用于保护共享数据的替代工具
+二次检测锁定模式，注意这个和单例模式中的饱汉模式不一样，它后面有对数据的使用
+```
+void undefined_behaviour_with_double_checked_locking()
+{
+	if(!resource_ptr)
+	{
+		std::lock_guard<std::mutex> lk(resource_mutex);
+		if(!resource_ptr)
+		{
+			resoutce_ptr.reset(new some_resource);
+		}
+	}
+	resource_ptr->do_something();
+}
+```
+它有可能产生恶劣的竞争条件，因为在锁外部的读取与锁内部由另一线程完成的写入不同步。这就因此创建了一个竞争条件，不仅涵盖了指针本身，还涵盖了指向的对象。
+
+C++标准库提供了std::once_flag和std::call_once来处理这种情况。使用std::call_once比显示使用互斥元通常会由更低的开销，特别是初始化已经完成的时候，应优先使用。[清单3.12 使用std::call_once的线程安全的类成员延迟初始化](https://github.com/xuyicpp/multi_threading/blob/master/chapter03/example3_12.cpp)
+
+保护很少更新的数据结构：例如DNS缓存，使用读写互斥元：单个“写”线程独占访问或共享，由多个“读”线程并发访问。
+[清单3.13 使用boost::share_mutex保护数据结构](https://github.com/xuyicpp/multi_threading/blob/master/chapter03/example3_13.cpp)
