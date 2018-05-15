@@ -87,3 +87,15 @@ C++标准库提供了std::once_flag和std::call_once来处理这种情况。使�
 
 保护很少更新的数据结构：例如DNS缓存，使用读写互斥元：单个“写”线程独占访问或共享，由多个“读”线程并发访问。
 [清单3.13 使用boost::share_mutex保护数据结构](https://github.com/xuyicpp/multi_threading/blob/master/chapter03/example3_13.cpp)
+
+第4章 同步并发操作
+- 等待事件
+
+使用C++标准库提供的工具来等待事件本身。std::condition_variable的std::condition_variable_any，后者可以与任何互斥元一起工作，所以有额外代价的可能。
+[清单4.1 使用std::condition_variable等待数据]()
+
+使用条件变量建立一个线程安全队列：[清单4.2 std::queue接口]()、[清单]
+
+- 使用future来等待一次性事件
+- 有事件限制的等待
+- 使用操作的同步来简化代码
