@@ -101,12 +101,16 @@ std::condition_variable可以调用notify_one()和notify_all()。然后std::cond
 
 在一个线程不需要立刻得到结果的时候，你可以使用std::async来启动一个异步任务。std::async返回一个std::future对象，而不是给你一个std::thread对象让你在上面等待，std::future对象最终将持有函数的返回值，当你需要这个值时，只要在future上调用get(),线程就会阻塞知道future就绪，然后返回该值。
 [清单4.6 使用std::future获取异步任务的返回值](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_06.cpp)
+
 std::async允许你通过将额外的参数添加到调用中，来将附加参数传递给函数，这与std::thread是同样的方式。
 [清单4.7 使用std::async来将参数传递给函数](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_07.cpp)
+
 std::packaged_task<>将一个future绑定到一个函数或可调用对象上。当std::packaged_task<>对象被调用时，它就调用相关联的函数或可调用对象，并且让future就绪，将返回值作为关联数据存储。
 [清单4.9 使用std::packaged_task在GUI线程上运行代码](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_09.cpp)
+
 std::promise<T>提供一种设置值（类型T）方式，它可以在这之后通过相关联的std::future<T>对象进行读取。
 [清单4.10 使用promise在单个线程中处理多个链接](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_10.cpp)，这个有点像select,或者poll。
+
 同时，还要为future保存异常，以及使用share_future等待来自多个线程。
 
 - 有时间限制的等待
@@ -115,6 +119,7 @@ std::promise<T>提供一种设置值（类型T）方式，它可以在这之后�
 [清单4.11 等待一个具有超时的条件变量](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_11.cpp)
 
 - 使用操作的同步来简化代码
+
 解决同步问题的范式，函数式编程，其中每个任务产生的结果完全依赖于它的输入而不是外部环境，以及消息传递，ATM状态机，线程通信通过状态发送一部消息来实现的。
 [清单4.13 使用future的并行快速排序](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_13.cpp)、
 [清单4.15 ATM逻辑类的简单实现](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_15.cpp)。
