@@ -92,10 +92,29 @@ C++标准库提供了std::once_flag和std::call_once来处理这种情况。使�
 - 等待事件
 
 使用C++标准库提供的工具来等待事件本身。std::condition_variable的std::condition_variable_any，后者可以与任何互斥元一起工作，所以有额外代价的可能。
-[清单4.1 使用std::condition_variable等待数据]()
+std::condition_variable可以调用notify_one()和notify_all()。然后std::condition_variable还可以wait(lk,[this]{return !data_queue.empty();}),这里的lk是unique_lock方便后面条件不满足的时候解锁，满足时开锁。
+[清单4.1 使用std::condition_variable等待数据](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_01.cpp)
 
-使用条件变量建立一个线程安全队列：[清单4.2 std::queue接口]()、[清单]
+使用条件变量建立一个线程安全队列：[清单4.2 std::queue接口](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_02.cpp)、[清单4.4 从清单4.1中提取push()和wait_and_pop()](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_04.cpp)。
 
 - 使用future来等待一次性事件
-- 有事件限制的等待
+
+在一个线程不需要立刻得到结果的时候，你可以使用std::async来启动一个异步任务。std::async返回一个std::future对象，而不是给你一个std::thread对象让你在上面等待，std::future对象最终将持有函数的返回值，当你需要这个值时，只要在future上调用get(),线程就会阻塞知道future就绪，然后返回该值。
+[清单4.6 使用std::future获取异步任务的返回值](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_06.cpp)
+std::async允许你通过将额外的参数添加到调用中，来将附加参数传递给函数，这与std::thread是同样的方式。
+[清单4.7 使用std::async来将参数传递给函数](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_07.cpp)
+std::packaged_task<>将一个future绑定到一个函数或可调用对象上。当std::packaged_task<>对象被调用时，它就调用相关联的函数或可调用对象，并且让future就绪，将返回值作为关联数据存储。
+[清单4.9 使用std::packaged_task在GUI线程上运行代码](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_09.cpp)
+std::promise<T>提供一种设置值（类型T）方式，它可以在这之后通过相关联的std::future<T>对象进行读取。
+[清单4.10 使用promise在单个线程中处理多个链接](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_10.cpp)，这个有点像select,或者poll。
+同时，还要为future保存异常，以及使用share_future等待来自多个线程。
+
+- 有时间限制的等待
+
+1.基于时间段的超时。2.基于时间点的超时。
+[清单4.11 等待一个具有超时的条件变量](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_11.cpp)
+
 - 使用操作的同步来简化代码
+解决同步问题的范式，函数式编程，其中每个任务产生的结果完全依赖于它的输入而不是外部环境，以及消息传递，ATM状态机，线程通信通过状态发送一部消息来实现的。
+[清单4.13 使用future的并行快速排序](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_13.cpp)、
+[清单4.15 ATM逻辑类的简单实现](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_15.cpp)。

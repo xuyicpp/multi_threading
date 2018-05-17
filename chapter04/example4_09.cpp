@@ -3,7 +3,7 @@
 #include <mutex>
 #include <future>
 #include <thread>
-#include <utility>
+#include <utility>			//这里有move函数
 
 std::mutex m;
 std::deque<std::packaged_task<void()> > tasks;
@@ -21,7 +21,7 @@ void gui_thread()
 			std::lock_guard<std::mutex> lk(m);
 			if(tasks.empty())
 				continue;
-			task=std::move(tasks.front());
+			task=std::move(tasks.front());		//move将对象的状态或对象转移到另一个对象，原来那个对象就为空了。
 			tasks.pop_front();
 		}
 		task();

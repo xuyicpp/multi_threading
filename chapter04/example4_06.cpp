@@ -10,3 +10,14 @@ int main()
 	do_other_stuff();
 	std::cout<<"The answer is "<<the_anwer.get()<<std::endl;
 }
+
+int find_the_answer_to_ltuae()
+{
+	return (1+1);
+}
+
+void do_other_stuff()
+{
+	std::cout<<"do_other_stuff"<<std::endl;
+}
+
