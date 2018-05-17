@@ -8,7 +8,7 @@ std::mutex m;
 
 bool wait_loop()
 {
-	auto const timeout=std::chrono::steady_clock::now()+std::chrono::miliseconds(500);
+	auto const timeout=std::chrono::steady_clock::now()+std::chrono::milliseconds(500);
 	std::unique_lock<std::mutex> lk(m);
 	while(!done)
 	{
