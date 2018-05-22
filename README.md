@@ -123,3 +123,19 @@ std::promise<T>提供一种设置值（类型T）方式，它可以在这之后�
 解决同步问题的范式，函数式编程，其中每个任务产生的结果完全依赖于它的输入而不是外部环境，以及消息传递，ATM状态机，线程通信通过状态发送一部消息来实现的。
 [清单4.13 使用future的并行快速排序](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_13.cpp)、
 [清单4.15 ATM逻辑类的简单实现](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_15.cpp)。
+
+第5章 C++内存模型和原子类型上操作
+ 
+本章介绍了C++11内存模型的底层细节，以及在线程间提供同步基础的原子操作。这包括了由std::atomic<>类模板的特化提供的基本原子类型，由std::atomic<>主模板提供的泛型原子接口，在这些类型上的操作，以及各种内存顺序选项的复杂细节。
+我们还看了屏障，以及它们如何通过原子类型上的操作配对，以强制顺序。最后，我们回到开头，看了看原子操作是如何用来在独立线程上的非原子操作之间强制顺序的。
+
+在原子类型上的每一个操作均具有一个可选的内存顺序参数，它可以用来指定所需的内存顺序语义。
+- 存储(store)操作，可以包括memory_order_relaxed、memory_order_release或memory_order_seq_cst顺序。
+- 载入(load)操作，可以包括memory_order_relaxed、memory_order_consume、memory_order_acquire或memory_order_seq_cst顺序。
+- 读-修改-写(read-modify-write)操作，可以包括memory_order_relaxed、memory_order_consume、memory_order_acquire、memory_order_release、memory_order_acq_rel或memory_order_seq_cst顺序。
+
+所有操作的默认顺序为memory_order_seq_cst。
+
+synchronizes-with(与同步):
+
+happens-before(发生于之前):
