@@ -88,7 +88,7 @@ C++标准库提供了std::once_flag和std::call_once来处理这种情况。使�
 保护很少更新的数据结构：例如DNS缓存，使用读写互斥元：单个“写”线程独占访问或共享，由多个“读”线程并发访问。
 [清单3.13 使用boost::share_mutex保护数据结构](https://github.com/xuyicpp/multi_threading/blob/master/chapter03/example3_13.cpp)
 
-第4章 同步并发操作
+## 第4章 同步并发操作
 - 等待事件
 
 使用C++标准库提供的工具来等待事件本身。std::condition_variable的std::condition_variable_any，后者可以与任何互斥元一起工作，所以有额外代价的可能。
@@ -124,7 +124,7 @@ std::promise<T>提供一种设置值（类型T）方式，它可以在这之后�
 [清单4.13 使用future的并行快速排序](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_13.cpp)、
 [清单4.15 ATM逻辑类的简单实现](https://github.com/xuyicpp/multi_threading/blob/master/chapter04/example4_15.cpp)。
 
-第5章 C++内存模型和原子类型上操作
+## 第5章 C++内存模型和原子类型上操作
  
 本章介绍了C++11内存模型的底层细节，以及在线程间提供同步基础的原子操作。这包括了由std::atomic<>类模板的特化提供的基本原子类型，由std::atomic<>主模板提供的泛型原子接口，在这些类型上的操作，以及各种内存顺序选项的复杂细节。
 我们还看了屏障，以及它们如何通过原子类型上的操作配对，以强制顺序。最后，我们回到开头，看了看原子操作是如何用来在独立线程上的非原子操作之间强制顺序的。
@@ -136,6 +136,15 @@ std::promise<T>提供一种设置值（类型T）方式，它可以在这之后�
 
 所有操作的默认顺序为memory_order_seq_cst。
 
-synchronizes-with(与同步):
+原子操作的内存顺序的三种模型：
+- 顺序一致顺序(sequentially consistent):(memory_order_seq_cst):[清单5.4 顺序一致隐含着总体顺序](https://github.com/xuyicpp/multi_threading/blob/master/chapter05/example5_04.cpp)。
+- 松散顺序(relaxed):(memory_order_relaxed):[清单5.6 多线程的松散操作](https://github.com/xuyicpp/multi_threading/blob/master/chapter05/example5_06.cpp)。
+- 获取-释放顺序(acquire-release):(memory_order_consume、memory_order_acquire、memory_order_release和memory_order_acq_rel):[清单5.9 使用获取和释放顺序的传递性同步](https://github.com/xuyicpp/multi_threading/blob/master/chapter05/example5_09.cpp)、[清单5.10 使用std::memory_order_consume同步数据(原子载入操作指向某数据的指针)](https://github.com/xuyicpp/multi_threading/blob/master/chapter05/example5_10.cpp)
 
-happens-before(发生于之前):
+synchronizes-with(与同步):
+- 在原子变量的载入和来自另一个线程的对该原子变量的载入之间，建立一个synchronizes-with关系，[清单5.11 使用原子操作从队列中读取值](https://github.com/xuyicpp/multi_threading/blob/master/chapter05/example5_11.cpp)
+- 在一个线程中释放屏障，在另一个线程中获取屏障，从而实现synchronizes-with关系，[清单5.12 松散操作可以使用屏障来排序](https://github.com/xuyicpp/multi_threading/blob/master/chapter05/example5_12.cpp)
+
+happens-before(发生于之前):传递性：如果A线程发生于B线程之前，并且B线程发生于C之前，则A线程间发生于C之前。
+- [清单5.8 获取-释放操作可以在松散操作中施加顺序](https://github.com/xuyicpp/multi_threading/blob/master/chapter05/example5_08.cpp)
+- [清单5.13 在非原子操作上强制顺序](https://github.com/xuyicpp/multi_threading/blob/master/chapter05/example5_13.cpp)
