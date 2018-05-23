@@ -34,5 +34,27 @@ private:
 	}
 	
 public:
-	threadsafe_queue();
+	threadsafe_queue():
+		head(new node),tail(head.get())
+		{}
+
+	threadsafe_queue(const threadsafe_queue& other)=delete;
+	threadsafe_queue& operator=(const threadsafe_queue& other)=delete;
+
+	std::shared_ptr<T> try_pop()
+	{
+		std::unique_ptr<node> old_head=pop_head();
+		return old_head?old_head->data:std::shared_ptr<T>();
+	}
+
+	void push(T new_value)
+	{
+		std::shared_ptr<T> new_data(std::make_shared<T>(std::move(new_value)));
+		std::unique_ptr<node> p(new node);
+		node* const new_tail=p.get();
+		std::lock_guard<std::mutex> tail_lock(tail_mutex);
+		tail->data=new_data;
+		tail->next=std::move(p);
+		tail=new_tail;
+	}
 };
