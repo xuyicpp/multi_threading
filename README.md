@@ -148,3 +148,29 @@ synchronizes-with(与同步):
 happens-before(发生于之前):传递性：如果A线程发生于B线程之前，并且B线程发生于C之前，则A线程间发生于C之前。
 - [清单5.8 获取-释放操作可以在松散操作中施加顺序](https://github.com/xuyicpp/multi_threading/blob/master/chapter05/example5_08.cpp)
 - [清单5.13 在非原子操作上强制顺序](https://github.com/xuyicpp/multi_threading/blob/master/chapter05/example5_13.cpp)
+
+## 第六章 设计基于锁的并发数据结构
+
+为并发存取设计数据结构时，需要考虑两方面：
+1、保证存取是安全的
+- 保证当数据结构不变性被别的线程破坏时的状态不被任何别的线程看到。
+- 注意避免数据结构接口所固有的竞争现象，通过为完整操作提供函数，而不是提供操作步骤。
+- 注意当出现例外时，数据结构是怎样来保证不变性不被破坏的。
+- 当使用数据结构时，通过限制锁的范围和避免使用嵌套锁，来降低产生死锁的机会。
+2、实现真正的并发存取
+- 锁的范围能否被限定，使得一个操作的一部分可以在锁外被执行？
+- 数据结构的不同部分能否被不同的互斥元保护？
+- 是否所有操作需要同样级别的保护？
+- 数据结构的一个小改变能否在不影响操作语义情况下提高并发性的机会？
+
+一些通用的数据结构(栈、队列、哈希映射以及链表)，考虑了如何在设计并发存取的时候应用上述设计准则来实现他们，使用锁来保护数据并阻止数据竞争。
+
+
+- 使用锁的线程安全栈
+[清单6.1 线程安全栈的类定义](https://github.com/xuyicpp/multi_threading/blob/master/chapter06/example6_01.cpp)
+- 使用细粒度锁和条件变量的线程安全队列
+[清单6.7 使用锁和等待的线程安全队列：内部与接口](https://github.com/xuyicpp/multi_threading/blob/master/chapter06/example6_07.cpp)
+- 一个使用锁的线程安全查找表
+[清单6.11 线程安全查找表](https://github.com/xuyicpp/multi_threading/blob/master/chapter06/example6_11.cpp)
+- 一个使用锁的线程安全链表
+[清单6.13 支持迭代的线程安全链表](https://github.com/xuyicpp/multi_threading/blob/master/chapter06/example6_13.cpp)
