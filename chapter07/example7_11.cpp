@@ -32,10 +32,10 @@ public:
 			{
 				std::shared_ptr<T> res;
 				res.swap(ptr->data);
-
+				//你增加的值比外部计数的值减少2
 				int const count_increase=old_head.external_count-2;
-
-				if(ptr->internal_count.fetch_add(count_increase)==count_increase)	//这里书上有问题
+				// 如果当前引用计数的值为0，那么先前你增加的值(即fetch_add的返回值)就是负数,此时可以删除这个结点
+				if(ptr->internal_count.fetch_add(count_increase)==(-count_increase))	
 				{
 					delete ptr;
 				}
