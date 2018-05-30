@@ -22,13 +22,14 @@ std::shared_ptr<T> pop()
 	if(old_head)
 	{
 		res.swap(old_head->data);
-		if(outstanding_hazard_pointers_for(old_head))		
+		//在你删除一个结点前检查风险指针是否引用它
+		if(outstanding_hazard_pointers_for(old_head))
 		{
-			reclaim_later(old_head);
+			reclaim_later(old_head);		//放在稍后回收的列表中
 		}
 		else
 		{
-			delete old_head;
+			delete old_head;				//立刻删除
 		}
 		delete_nodes_with_no_hazards();
 	}
