@@ -51,10 +51,10 @@ public:
 
 		for(;;)
 		{
-			increase_external_count(tail,old_tail);
+			increase_external_count(tail,old_tail);		//增加计数
 
 			T* old_data=nullptr;
-			if(old_tail.ptr->data.compare_exchange_strong(old_data,new_data.get()))
+			if(old_tail.ptr->data.compare_exchange_strong(old_data,new_data.get()))		//解引用
 			{
 				old_tail.ptr->next=new_next;
 				old_tail=tail.exchange(new_next);
