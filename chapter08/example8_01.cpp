@@ -8,9 +8,9 @@ struct sorter
 		std::promise<std::list<T> > promise;
 	};
 
-	thread_safe_stack<chunk_to_sort> chunks;
-	std::vector<std::thread> threads;
-	unsigned const max_thread_count;
+	thread_safe_stack<chunk_to_sort> chunks;	//未排序块
+	std::vector<std::thread> threads;			//线程集
+	unsigned const max_thread_count;			
 	std::atomic<bool> end_of_data;
 
 	sorter():
@@ -37,6 +37,7 @@ struct sorter
 		}
 	}
 
+	//完成排序并压入栈
 	std::list<T> do_sort(std::List<T>& chunk_data)
 	{
 		if(chunk_data.empty())
