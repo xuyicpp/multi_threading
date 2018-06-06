@@ -259,6 +259,8 @@ void processing_loop()
 - std::partial_sum的并行实现:[清单8.11 通过划分问题来并行计算分段的和](https://github.com/xuyicpp/multi_threading/blob/master/chapter08/example8_11.cpp)、[清单8.13 通过成对更新的partial_sum的并行实现](https://github.com/xuyicpp/multi_threading/blob/master/chapter08/example8_13.cpp)
 - 屏障(barrier):一种同步方法使得线程等待直到要求的线程已经到达了屏障。[清单8.12 一个简单的屏障类](https://github.com/xuyicpp/multi_threading/blob/master/chapter08/example8_12.cpp)
 
+## 第9章 高级线程管理
+
 
 
 
