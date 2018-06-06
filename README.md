@@ -219,6 +219,46 @@ happens-before(发生于之前):传递性：如果A线程发生于B线程之前�
 
 ## 第8章 设计并发代码
 
+### 在线程间划分工作的技术
+- 处理开始前在线程间划分数据
+- 递归地划分数据
+- 以任务类型划分工作
+
+### 影响并发代码性能的因素
+- 有多少个处理器
+- 数据竞争和乒乓缓存：处理器很多需要互相等待称为高竞争。在如下的循环中，counter的数据在各处理器的缓存间来回传递。这被称为乒乓缓存(cache ping-pong)，而且会严重影响性能。
+
+```
+std::atomic<unsigned long> counter(0);
+void processing_loop()
+{
+	while(counter.fetch_add(1,std::memory_order_relaxed)<100000000)
+	{
+		do_something();
+	}
+}
+```
+- 假共享：处理器缓存的最小单位通常不是一个内存地址，而是一小块缓存线(cache line)的内存。这些内存块一般大小为32 ~ 64字节，取决于具体的处理器。这个缓存线是两者共享的，然而其中的数据并不共享，因此称为假共享(false sharing)。
+- 数据应该多紧密
+- 过度订阅和过多的任务切换
+
+### 为多线程性能设计数据结构
+为多线程性能设计你的数据结构时：竞争、假共享以及数据接近。
+- 为复杂操作划分数组元素
+- 其他数据结构中的数据访问方式
+
+### 为并发设计时的额外考虑
+- 并行算法中的异常安全：1.用对象的析构函数中检查2.STD::ASYNC()的异常安全
+- 可扩展性和阿姆达尔定律：简单来说就是设计最大化并发
+- 用多线程隐藏延迟
+- 用并发提高响应性
+
+### 在实践中设计并发代码
+- std::for_each的并行实现:[清单8.7 std::for_each的并行版本](https://github.com/xuyicpp/multi_threading/blob/master/chapter08/example8_07.cpp)、[清单8.8 使用std::async的std::for_each的并行版本](https://github.com/xuyicpp/multi_threading/blob/master/chapter08/example8_08.cpp)
+- std::find的并行实现:[清单8.9 并行find算法的一种实现](https://github.com/xuyicpp/multi_threading/blob/master/chapter08/example8_09.cpp)、[清单8.10 使用std::async的并行查找算法的实现](https://github.com/xuyicpp/multi_threading/blob/master/chapter08/example8_10.cpp)
+- std::partial_sum的并行实现:[清单8.11 通过划分问题来并行计算分段的和](https://github.com/xuyicpp/multi_threading/blob/master/chapter08/example8_11.cpp)、[清单8.13 通过成对更新的partial_sum的并行实现](https://github.com/xuyicpp/multi_threading/blob/master/chapter08/example8_13.cpp)
+- 屏障(barrier):一种同步方法使得线程等待直到要求的线程已经到达了屏障。[清单8.12 一个简单的屏障类](https://github.com/xuyicpp/multi_threading/blob/master/chapter08/example8_12.cpp)
+
 
 
 
