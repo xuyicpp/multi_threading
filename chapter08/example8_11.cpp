@@ -1,4 +1,5 @@
 //通过划分问题来并行计算分段的和
+//简单来说还是分块累加
 template <typename Iterator>
 void parallel_partial_sum(Iterator first,Iterator last)
 {
@@ -15,7 +16,7 @@ void parallel_partial_sum(Iterator first,Iterator last)
 				Iterator end=last;
 				++end;
 				std::partial_sum(begin,end,begin);
-				if(previous_end_value)
+				if(previous_end_value)			//这是否为第一个块
 				{
 					value_type& addend=previous_end_value->get();
 					*last+=addend;
