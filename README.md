@@ -261,9 +261,43 @@ void processing_loop()
 
 ## 第9章 高级线程管理
 
+本章,我们考虑了许多“高级的“线程管理方法：线程池和中断线程。
 
+- [清单9.1 简单的线程池](https://github.com/xuyicpp/multi_threading/blob/master/chapter09/example9_01.cpp)
+- [清单9.9 interruptible_thread的基本实现](https://github.com/xuyicpp/multi_threading/blob/master/chapter09/example9_09.cpp)
 
+你已经看到使用本地工作队列如何减少同步管理以及潜在提高线程池的吞吐量，
 
+- [清单9.6 使用本地线程工作队列的线程池](https://github.com/xuyicpp/multi_threading/blob/master/chapter09/example9_06.cpp)
+
+并且看到当等待子任务完成时如何运行队列中别的任务来减少发生死锁的可能性。
+
+- [清单9.8 使用工作窃取的线程池](https://github.com/xuyicpp/multi_threading/blob/master/chapter09/example9_08.cpp)
+
+我们也考虑了许多方法来允许一个线程中断另一个线程的处理，例如使用特殊中断点
+```
+void interruption_point()
+{
+	if(this_thread_interrupt_flag.is_set())
+	{
+		throw thread_interrupted();
+	}
+}
+```
+和如何将原本会被中断阻塞的函数变得可以被中断。
+```
+template<typename T>
+void interruptible_wait(std::future<T>& uf)
+{
+	//这会一直等到要么中断标志被设置，要么future已经准备好了，但是每次在future上执行阻塞要等待1ms。
+	while(!this_thread_interrupt_flag.is_set())
+	{
+		if(uf.wait_for(lk.std::chrono::miliseconds(1)==std::future_status::ready))
+			break;
+	}
+	interruption_point();
+}
+```
 
 
 
